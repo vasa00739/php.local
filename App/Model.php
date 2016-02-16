@@ -8,6 +8,8 @@ abstract class Model
 {
     const TABLE = '';
 
+    public $id;
+
     public static function findAll()
     {
         $db = new Db();
@@ -28,5 +30,26 @@ abstract class Model
             array('id' => $id)
         );
     }
+
+    public function insert()
+    {
+
+        $db = new Db();
+
+        $columns = [];
+        foreach ($this as $key => $value)
+        {
+            if ("id" == $key)
+                continue;
+            $columns[$key] = '\''.$value.'\'';
+        }
+
+        echo "INSERT INTO " . static::TABLE .
+             " (". implode(', ', array_keys($columns)) .")
+            VALUES (". implode(', ', $columns) .")";
+        var_dump($columns);
+        die();
+    }
+
 
 }
