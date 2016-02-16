@@ -15,8 +15,8 @@ $news->title = "Мой заголовок";
 $news->text = "Мой текст";
 $date = date("Y-m-d",strtotime($date));
 $news->date = $date;
-$news->insert();
-var_dump($news);
+$news->save();
+
 
 foreach ($articles as $news)
 {

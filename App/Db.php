@@ -2,12 +2,14 @@
 
 namespace App;
 
-
 class Db
 {
+
+    use Singleton;
+
     private $dbh;
 
-    public function __construct()
+    protected function __construct()
     {
         $this->dbh = new \PDO('mysql:host=localhost;dbname=test', 'root', '');
     }
@@ -24,12 +26,14 @@ class Db
     {
         $sth = $this->dbh->prepare($sql);
         $res = $sth->execute($parameters);
-        if (false !== $res)
-        {
+        if (false !== $res) {
             return $sth->fetchAll(\PDO::FETCH_CLASS, $class_name);
         }
         return $res;
     }
 
-
+    public function getLastInsertId()
+    {
+        return $this->dbh->lastInsertId();
+    }
 }

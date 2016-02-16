@@ -12,7 +12,7 @@ abstract class Model
 
     public static function findAll()
     {
-        $db = new Db();
+        $db = Db::getInstance();
         return $db->query(
             'SELECT * FROM ' . static::TABLE,
             static::class
@@ -22,7 +22,7 @@ abstract class Model
 
     public static function findById($id)
     {
-        $db = new Db();
+        $db = Db::getInstance();
         return $db->query(
             'SELECT * FROM ' . static::TABLE .
             ' WHERE id = :id',
@@ -31,24 +31,42 @@ abstract class Model
         );
     }
 
+    public function save()
+    {
+        if ('NULL' == $this->id)
+            $this->insert();
+        else echo "Объект существует";
+    }
+
     public function insert()
     {
 
-        $db = new Db();
-
-        $columns = [];
+        // формируем массив из объеста
+        // для формирования запроса к базе формата
+        // array [col1, col2, col3]
+        // $array[:col1 => col1, :col2 => col2 :col3 => col3)
         foreach ($this as $key => $value)
         {
             if ("id" == $key)
                 continue;
-            $columns[$key] = '\''.$value.'\'';
+            $columns[] = $key;
+            $parameters[':'. $key] = $value;
         }
 
-        echo "INSERT INTO " . static::TABLE .
-             " (". implode(', ', array_keys($columns)) .")
-            VALUES (". implode(', ', $columns) .")";
-        var_dump($columns);
-        die();
+        // подготавливаем запрос на добавление записи в формате
+        // INSERT INTO table.name (col1, col2, col3) VALUES (:col1, :col2, :col3)
+        $sql =
+            'INSERT INTO ' . static::TABLE . '
+            (' . implode(", ", $columns) .')
+            VALUES (' . implode(', ', array_keys($parameters)) .')
+            ';
+
+        $db = Db::getInstance();
+        if ('TRUE' == $db->execute($sql, $parameters))
+        {
+            // присваем значение Id объекта АвтоИнкрементом из базы данных
+            $this->id = (int) $db->getLastInsertId();
+        }
     }
 
 
