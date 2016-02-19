@@ -36,4 +36,9 @@ class Db
     {
         return $this->dbh->lastInsertId();
     }
+
+    public function getError()
+    {
+        return $this->dbh->errorInfo();
+    }
 }

@@ -2,14 +2,17 @@
 
 use App\Models\User;
 use App\Models\News;
+use App\Config;
 include 'autoload.php';
 
 $articles = News::findAll();
 
 include 'Assets/head.php';
 
-echo "Тестируем добавление <br>";
+$config = Config::getInstance();
+var_dump($config);
 
+/*
 $news = new News();
 $news->title = "Мой заголовок";
 $news->text = "Мой текст";
@@ -30,5 +33,5 @@ foreach ($articles as $news)
     echo "</table>";
 }
 
-
+*/
 include 'Assets/bottom.php';

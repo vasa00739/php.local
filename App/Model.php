@@ -23,9 +23,10 @@ abstract class Model
     public static function findById($id)
     {
         $db = Db::getInstance();
+
         return $db->query(
             'SELECT * FROM ' . static::TABLE .
-            ' WHERE id = :id',
+            ' WHERE id = :id ',
             static::class,
             array('id' => $id)
         );
@@ -33,12 +34,14 @@ abstract class Model
 
     public function save()
     {
-        if ('NULL' == $this->id)
+        if (null == $this->id)
             $this->insert();
-        else echo "Объект существует";
+        else
+            $this->update();
+
     }
 
-    public function insert()
+    protected function insert()
     {
 
         // формируем массив из объеста
@@ -62,12 +65,32 @@ abstract class Model
             ';
 
         $db = Db::getInstance();
-        if ('TRUE' == $db->execute($sql, $parameters))
+        if (true == $db->execute($sql, $parameters))
         {
             // присваем значение Id объекта АвтоИнкрементом из базы данных
             $this->id = (int) $db->getLastInsertId();
         }
     }
 
+    protected function update()
+    {
+        $parameters[':id'] = $this->id;
+        foreach($this as $key => $value)
+        {
+            if ('id' == $key)
+                continue;
+            $columns[] = $key . ' = :'.$key;
+            $parameters[':'. $key] = $value;
+        }
+        $sql = 'UPDATE '. static::TABLE .
+            ' SET '. implode(", ", $columns) .
+            ' WHERE id = :id';
+        $db = Db::getInstance();
+
+        if (true == $db->execute($sql, $parameters))
+        {
+            echo "Обновление завершено";
+        }
+    }
 
 }
